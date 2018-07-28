@@ -1,0 +1,106 @@
+{% extends "login/top_bar.html" %}
+{% block content %}
+    {% if notification != '0' %}
+        <script>alert("{{ notification }} new Notifications")</script>
+        {#        {{%redirect('/music/')%}}#}
+    {% endif %}
+        <ul class="nav navbar-nav navbar-right">
+            {#      <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>#}
+            <li><a href="#"> Welcome {{ username }}<sup>{{ notification }}</sup></a></li>
+            <li><a href="/music/logout/"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+        </ul>
+        </div>
+        </nav>
+
+        <div class="container">
+        <div class="row">
+        <div class="col-sm-6" style="border-right: 1px solid grey">
+            <form name="form" enctype="multipart/form-data"
+                  action="/music/saved/" method="POST">{% csrf_token %}
+                <div class="form-group">
+                    <label for="name">Your Name:</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ username }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="desc">Report Description:</label>
+                    <input type="text" class="form-control" id="desc" name="description" required>
+                </div>
+                <br>
+                <fieldset style="max-width:470px;">
+                    <legend>Attach Prescription Here:</legend>
+                    <input type="file" style="margin-left:20%;"
+                           placeholder="Upload Prescription" name="picture" required/>
+                </fieldset>
+                <br>
+                {% if username == 'Doctor' %}
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="share1"> Share Report with Reception</label>
+                    </div>
+                    <br>
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="share2"> Share Report with Nurse</label>
+                    </div>
+                {% endif %}
+
+                {% if username == 'Nurse' %}
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="share1"> Share Report with Reception</label>
+                    </div>
+                    <br>
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="share2"> Share Report with Doctor</label>
+                    </div>
+                {% endif %}
+
+                {% if username == 'Reception' %}
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="share1"> Share Report with Doctor</label>
+                    </div>
+                    <br>
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="share2"> Share Report with Nurse</label>
+                    </div>
+                {% endif %}
+                <br>
+
+                <div style="max-width:470px;">
+                    <button style="border:0px;background-color:#4285F4; margin-top:8%;
+                  height:35px; width:80%; margin-left:19%;" type="submit" value="Login">
+                        <strong>Upload Prescription File</strong>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-6">
+        <h2 style="text-align: center">Prescription For You</h2>
+
+        {% for us in user %}
+            <div class="row">
+            {% if us.name == username %}
+                <div class="col-sm-6"><p style="border-bottom: 1px solid #cccccc"><a href="{{us.picture.url}}" target="_blank">{{ us.picture }}</a></p></div>
+                <div class="col-sm-6"><h6>Shared With
+                {% if us.share1 != 'None' %}
+                    {{ us.share1 }} &nbsp; &nbsp;
+                {% endif %}
+                {% if us.share2 != 'None' %}
+                     {{ us.share2 }}
+                {% endif %}</h6></div>
+            {% endif %}
+            {% if us.share1 == username %}
+                <div class="col-sm-6"><p style="border-bottom: 1px solid #cccccc"><a href="{{us.picture.url}}" target="_blank">{{ us.picture }}</a></p></div>
+                <div class="col-sm-6"><h6>Shared By {{ us.name  }} &nbsp;{{ us.time }} </h6></div>
+
+            {% endif %}
+            {% if us.share2 == username %}
+                <div class="col-sm-6"><p style="border-bottom: 1px solid #cccccc"><a href="{{us.picture.url}}" target="_blank">{{ us.picture }}</a></p></div>
+                <div class="col-sm-6"><h6>Shared By {{ us.name }} &nbsp;{{ us.time }}</h6></div>
+
+            {% endif %}
+{#            <p ><a href="music/report/>{{ us.description }}</a></p>#}
+            </div>
+        {% endfor %}
+
+        </div>
+    </div>
+    </div>
+{% endblock %}
